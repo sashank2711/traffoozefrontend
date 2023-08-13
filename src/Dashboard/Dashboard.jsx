@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Container } from '@mui/material';
 import './Dashboard.css';
-import NavigationBar from '../components/NavigationBar';
-import { Dummydata } from '../Dummydata';
+import Sidebar from '../components/Sidebar';
 
 function Dashboard() {
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [location1, setLocation1] = useState('');
-  const [location2, setLocation2] = useState('');
   const [trafficData, setTrafficData] = useState([]);
 
   const handleCategoryClick = (category) => {
@@ -15,29 +12,47 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    const fetchTrafficData = () => {
-      // Fetch the data based on the selected category
-      switch (selectedCategory) {
-        case 'TrafficJams':
-          setTrafficData(Dummydata.TrafficJams);
-          break;
-        case 'RoadAccidents':
-          setTrafficData(Dummydata.RoadAccidents);
-          break;
-        case 'RoadClosures':
-          setTrafficData(Dummydata.RoadClosures);
-          break;
-        case 'TrafficForecast':
-          setTrafficData(Dummydata.TrafficForecast);
-          break;
-        default:
+    const fetchTrafficData = async () => {
+      if (selectedCategory) {
+        try {
+          let url;
+          switch (selectedCategory) {
+            case 'TrafficJams':
+              url = 'https://traffooze-flask.onrender.com/trafficjam';
+              break;
+            case 'RoadAccidents':
+              url = 'https://traffooze-flask.onrender.com/roadaccident';
+              break;
+            case 'RoadClosures':
+              url = 'https://traffooze-flask.onrender.com/roadclosure';
+              break;
+            case 'TrafficForecast':
+              // You can handle the TrafficForecast API here if needed
+              break;
+            default:
+              setTrafficData([]);
+              return;
+          }
+
+          const response = await fetch(url);
+          if (!response.ok) {
+            // Handle the case when the API request fails
+            setTrafficData([]);
+            return;
+          }
+
+          const data = await response.json();
+          setTrafficData(data);
+        } catch (error) {
+          // Handle any errors that occur during the API request
           setTrafficData([]);
+        }
+      } else {
+        setTrafficData([]);
       }
     };
 
-    if (selectedCategory) {
-      fetchTrafficData();
-    }
+    fetchTrafficData();
   }, [selectedCategory]);
 
   const renderTrafficData = () => {
@@ -46,7 +61,7 @@ function Dashboard() {
         <table className="traffic-table">
           <thead>
             <tr>
-              <th>Date</th>
+              <th>Date</th>  
               <th>Time</th>
               <th>Message</th>
               <th>Location</th>
@@ -60,7 +75,6 @@ function Dashboard() {
                 <td>{data.time}</td>
                 <td>{data.message}</td>
                 <td>
-                  {data.location.latitude}, {data.location.longitude}
                 </td>
                 <td>{data.address}</td>
               </tr>
@@ -79,18 +93,7 @@ function Dashboard() {
         <div className="category-page">
           <h2 className="category-title">{selectedCategory}</h2>
           <div>
-            <input
-              type="text"
-              value={location1}
-              onChange={(e) => setLocation1(e.target.value)}
-              placeholder="Location 1"
-            />
-            <input
-              type="text"
-              value={location2}
-              onChange={(e) => setLocation2(e.target.value)}
-              placeholder="Location 2"
-            />
+           
           </div>
           {renderTrafficData()}
         </div>
@@ -111,7 +114,8 @@ function Dashboard() {
         <h1 className="dashboard-title">Traffooze Dashboard</h1>
       </div>
       <Container maxWidth="lg" className="dashboard-container">
-        <NavigationBar onSelectCategory={handleCategoryClick} />
+        {/* Use Sidebar instead of NavigationBar */}
+        <Sidebar onSelectCategory={handleCategoryClick} />
 
         <div className="content">{selectedCategory && renderCategoryPage()}</div>
       </Container>

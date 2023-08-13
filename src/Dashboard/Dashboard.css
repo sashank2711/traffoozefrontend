@@ -14,18 +14,20 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #faf4f4;
 }
 
 /* Dashboard header */
 .dashboard-header {
-  background-color: #050505;
-  color: #fff;
+  background-color: #0c0101;
+  color: #0c0101;
   padding: 20px;
   text-align: center;
 }
 
 .dashboard-title {
+  background-color: #0c0101;
+  color:#d0e960;
   font-size: 24px;
   font-weight: bold;
   margin: 0;
